@@ -134,6 +134,50 @@ this.http.get<SolicitudDTO[]>(`/api/admin/solicitudes?estado=PENDIENTE`)
 
 ---
 
+## 📥 ¿Cuándo se ejecuta la petición HTTP en Angular?
+
+Los métodos como `this.http.get(...)` devuelven un **Observable**. Ese observable **no ejecuta la petición HTTP hasta que se le hace `.subscribe()`**. Por eso decimos que los observables de Angular son **“fríos”**.
+
+```ts
+const obs$ = this.http.get('/api/datos'); // No hace nada aún
+obs$.subscribe(data => console.log(data)); // Aquí sí se ejecuta la petición
+```
+
+### 🛠️ ¿Qué hace `.subscribe()`?
+
+```ts
+observable.subscribe({
+  next: data => { ... },     // cuando llegan los datos
+  error: err => { ... },     // si hay error
+  complete: () => { ... }    // cuando termina
+});
+```
+
+### 🧩 Otras formas de consumir observables
+
+| Método             | ¿Cuándo usarlo?                           |
+| ------------------ | ----------------------------------------- |
+| `.subscribe()`     | Para ejecutar código al recibir datos     |
+| `async pipe`       | Mostrar datos directamente en el template |
+| `firstValueFrom()` | Convertir a promesa y usar con `await`    |
+| `.pipe(...)`       | Transformar o combinar streams con RxJS   |
+
+### ✅ Ejemplo con `async pipe` en el template
+
+```ts
+datos$ = this.http.get('/api/datos');
+```
+
+```html
+<ul>
+  <li *ngFor="let item of datos$ | async">{{ item.nombre }}</li>
+</ul>
+```
+
+Esta es la forma recomendada para mostrar listas u observables simples sin necesidad de `.subscribe()` manual en el componente.
+
+---
+
 ## 🧪 Pruebas
 
 Actualmente se han implementado pruebas unitarias básicas para:
@@ -159,6 +203,13 @@ Archivo: `src/app/shared/solicitud.service.spec.ts`
   * `POST /api/solicitudes`
 * Simula respuestas con `.flush()`
 * Verifica que no queden peticiones abiertas
+
+🧠 En estas pruebas:
+
+* Se llama al servicio real (`SolicitudService`)
+* Se intercepta la petición HTTP con `httpMock.expectOne(...)`
+* Luego se responde manualmente usando `flush(...)`
+* Así se validan tanto los parámetros de la solicitud como el manejo de la respuesta
 
 Para ejecutar las pruebas:
 
