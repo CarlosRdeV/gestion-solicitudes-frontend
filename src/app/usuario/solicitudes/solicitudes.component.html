@@ -1,0 +1,20 @@
+<h2>Mis Solicitudes</h2>
+
+<form (ngSubmit)="crearSolicitud()">
+  <label for="titulo">Título:</label><br>
+  <input [(ngModel)]="nuevaSolicitud.titulo" name="titulo" id="titulo" required><br><br>
+
+  <label for="descripcion">Descripción:</label><br>
+  <textarea [(ngModel)]="nuevaSolicitud.descripcion" name="descripcion" id="descripcion" required></textarea><br><br>
+
+  <button type="submit">Enviar Solicitud</button>
+</form>
+
+<hr>
+
+<ul>
+  <li *ngFor="let solicitud of solicitudes">
+    <strong>{{ solicitud.titulo }}</strong> - <em>{{ solicitud.estado }}</em>
+    <p>{{ solicitud.descripcion }}</p>
+  </li>
+</ul>

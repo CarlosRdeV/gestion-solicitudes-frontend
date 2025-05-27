@@ -1,12 +1,24 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, RouterLink } from '@angular/router';
+import { AuthService } from './shared/auth.service';
 
 @Component({
-  selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+selector: 'app-root',
+standalone: true,
+imports: [RouterOutlet, RouterLink],
+templateUrl: './app.component.html',
+styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'gestion-solicitudes-frontend';
+rol: string;
+
+constructor(private authService: AuthService) {
+  this.rol = this.authService.getRol();
+}
+
+cambiarRol(): void {
+const nuevoRol = this.authService.getRol() === 'ADMIN' ? 'USUARIO' : 'ADMIN';
+this.authService.setRol(nuevoRol);
+this.rol = nuevoRol;
+}
 }

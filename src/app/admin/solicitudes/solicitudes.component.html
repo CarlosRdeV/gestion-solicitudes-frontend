@@ -1,0 +1,13 @@
+<h2>Solicitudes - Administrador</h2>
+
+<ul>
+  <li *ngFor="let solicitud of solicitudes">
+    <strong>{{ solicitud.titulo }}</strong> - <em>{{ solicitud.estado }}</em>
+    <p>{{ solicitud.descripcion }}</p>
+
+    <button (click)="aprobar(solicitud.id)" [disabled]="solicitud.estado !== 'PENDIENTE'">Aprobar</button>
+    <button (click)="rechazar(solicitud.id)" [disabled]="solicitud.estado !== 'PENDIENTE'">Rechazar</button>
+
+    <hr>
+  </li>
+</ul>
