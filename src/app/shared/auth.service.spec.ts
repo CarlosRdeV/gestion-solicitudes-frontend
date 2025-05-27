@@ -5,6 +5,7 @@ describe('AuthService', () => {
   let service: AuthService;
 
   beforeEach(() => {
+    localStorage.clear(); // ¡Limpia antes de inyectar!
     TestBed.configureTestingModule({});
     service = TestBed.inject(AuthService);
   });

@@ -81,6 +81,25 @@ src/app/
 
 ---
 
+## 💡 Diferencia entre AuthService y Guard
+
+* `AuthService`: es un **servicio compartido** que mantiene y expone el rol actual (ADMIN o USUARIO). También permite cambiarlo o consultarlo desde cualquier parte de la app.
+
+  * Ejemplo: `authService.getRol()` devuelve el rol actual.
+  * Simula un sistema de autenticación sin login real.
+
+* `authGuard`: es un **guardia de ruta** (Route Guard) que usa el `AuthService` para decidir si se puede navegar a una ruta específica.
+
+  * Si el rol no coincide con el esperado, bloquea el acceso o redirige.
+  * Se configura en `app.routes.ts` con `canActivate`.
+
+**En resumen:**
+
+* `AuthService` mantiene el estado
+* `authGuard` actúa como filtro al navegar
+
+---
+
 ## 🛡️ Guards por rol
 
 Se usa un `authGuard` basado en el `AuthService` para restringir acceso a rutas según el rol:
@@ -117,10 +136,35 @@ this.http.get<SolicitudDTO[]>(`/api/admin/solicitudes?estado=PENDIENTE`)
 
 ## 🧪 Pruebas
 
-Actualmente no se han implementado pruebas unitarias o E2E, pero el proyecto está preparado para usar:
+Actualmente se han implementado pruebas unitarias básicas para:
 
-* `Karma` + `Jasmine` para pruebas unitarias
-* `Protractor` (deprecado) o `Cypress` para E2E
+### 🔹 AuthService
+
+Archivo: `src/app/shared/auth.service.spec.ts`
+
+* Verifica que el servicio se crea correctamente
+* Verifica que el rol por defecto es `USUARIO`
+* Permite cambiar entre `USUARIO` y `ADMIN`
+* Prueba los métodos `esAdmin()` y `esUsuario()`
+* Limpia el `localStorage` antes de cada prueba
+
+### 🔹 SolicitudService
+
+Archivo: `src/app/shared/solicitud.service.spec.ts`
+
+* Usa `HttpClientTestingModule` y `HttpTestingController`
+* Verifica que se hagan correctamente las llamadas HTTP:
+
+  * `GET /api/solicitudes/usuario/:id`
+  * `POST /api/solicitudes`
+* Simula respuestas con `.flush()`
+* Verifica que no queden peticiones abiertas
+
+Para ejecutar las pruebas:
+
+```bash
+ng test
+```
 
 ---
 
