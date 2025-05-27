@@ -1,59 +1,139 @@
-# GestionSolicitudesFrontend
+# Frontend - GestionSolicitudes
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.13.
+Este frontend fue desarrollado con **Angular 16+** y forma parte del proyecto completo de "GestionSolicitudes". Se conecta al backend construido en Spring Boot y permite simular roles, visualizar solicitudes y realizar acciones como aprobarlas o filtrarlas por estado.
 
-## Development server
+---
 
-To start a local development server, run:
+## ⚙️ Tecnologías usadas
+
+* Angular CLI: 16+
+* Node.js: 18+
+* TypeScript
+* Angular Material (opcional)
+* Standalone Components
+
+---
+
+## 🚀 Instalación del proyecto
+
+### 1. Clonar el repositorio
+
+```bash
+git clone <URL-del-repo>
+cd gestion-solicitudes-frontend
+```
+
+### 2. Instalar dependencias
+
+```bash
+npm install
+```
+
+### 3. Ejecutar la aplicación
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+La aplicación estará disponible en: [http://localhost:4200](http://localhost:4200)
 
-## Code scaffolding
+---
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## 👥 Simulación de Roles
 
-```bash
-ng generate component component-name
+En la interfaz principal puedes cambiar entre dos roles:
+
+* `ADMIN`: puede ver todas las solicitudes y aprobarlas.
+* `USUARIO`: solo ve sus propias solicitudes.
+
+Esto se gestiona localmente con `AuthService` y `localStorage`. El componente `AppComponent` muestra el rol actual y permite cambiarlo visualmente sin autenticación real.
+
+---
+
+## 🧩 Estructura de módulos y componentes
+
+```text
+src/app/
+├── shared/                         # Servicios y modelos compartidos
+│   ├── auth.service.ts             # Servicio para controlar el rol actual
+│   ├── solicitud.service.ts        # Servicio HTTP para consumir la API
+│   └── interfaces.ts               # Interfaces y DTOs usados globalmente
+│
+├── usuario/                        # Módulo para usuarios comunes
+│   ├── usuario.module.ts           # Módulo lazy-load
+│   └── solicitudes/                # Componente principal para usuarios
+│       ├── solicitudes.component.ts
+│       ├── solicitudes.component.html
+│       └── solicitudes.component.css
+│       
+├── admin/                          # Módulo para usuarios administradores
+│   ├── admin.module.ts             # Módulo lazy-load
+│   └── solicitudes/                # Componente para administración
+│       ├── solicitudes.component.ts
+│       ├── solicitudes.component.html
+│       └── solicitudes.component.css
+│
+├── app.component.ts               # Componente raíz: muestra navegación y cambio de rol
+├── app.component.html             # Plantilla base con botones y <router-outlet>
+├── app.routes.ts                  # Rutas y guards con lazy loading
+└── main.ts                        # Punto de arranque
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
 
-```bash
-ng generate --help
+## 🛡️ Guards por rol
+
+Se usa un `authGuard` basado en el `AuthService` para restringir acceso a rutas según el rol:
+
+```ts
+// app.routes.ts
+{
+  path: 'admin',
+  canActivate: [authGuard],
+  data: { rol: 'ADMIN' },
+  loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule)
+}
 ```
 
-## Building
+El guard redirige automáticamente a la ruta correspondiente si el rol es incorrecto.
 
-To build the project run:
+---
 
-```bash
-ng build
+## 🔗 Comunicación con el backend
+
+El servicio `SolicitudService` se conecta al backend Spring Boot en la ruta `/api/solicitudes` y `/api/admin/solicitudes`. Se usan métodos `GET`, `POST`, y `PUT` según la acción:
+
+* Obtener solicitudes por estado
+* Crear nueva solicitud
+* Aprobar solicitud
+
+Ejemplo de llamada:
+
+```ts
+this.http.get<SolicitudDTO[]>(`/api/admin/solicitudes?estado=PENDIENTE`)
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+---
 
-## Running unit tests
+## 🧪 Pruebas
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+Actualmente no se han implementado pruebas unitarias o E2E, pero el proyecto está preparado para usar:
+
+* `Karma` + `Jasmine` para pruebas unitarias
+* `Protractor` (deprecado) o `Cypress` para E2E
+
+---
+
+## 📦 Compilación para producción
 
 ```bash
-ng test
+ng build --configuration production
 ```
 
-## Running end-to-end tests
+Esto genera los archivos en la carpeta `/dist` listos para desplegarse en cualquier servidor.
 
-For end-to-end (e2e) testing, run:
+---
 
-```bash
-ng e2e
-```
+## 📄 Autor: Carlos Rdev
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+📅 Última actualización: Mayo 2025
